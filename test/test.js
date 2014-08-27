@@ -11,48 +11,43 @@ describe('deepObserve', function() {
         });
 	});
 
-	xit("should be able to watch simple object and it's values same as regular Object.observe", function() {
+	it("should be able to watch simple object and it's values same as regular Object.observe", function(done) {
 
-        runs(function () {
-            observed.a = 1;
-            observed.a = 2;
-            delete observed.a;
-            setTimeout(function () {
-                observed.b = 0;
-            }, 4)
-        });
 
-        waits(10);
+		observed.a = 1;
+		observed.a = 2;
+		delete observed.a;
+		setTimeout(function () {
+			observed.b = 0;
+		}, 4);
 
-        runs(function () {
+		setTimeout(function(){
+			expect(changes.length).toBe(2);
+			expect(changes[0].length).toBe(3);
+			expect(changes[0][0].type).toBe('add');
+			done();
+		}, 10);
 
-            expect(changes.length).toBe(2);
-            expect(changes[0].length).toBe(3);
-            expect(changes[0][0].type).toBe('add');
-
-        });
 	});
 
-    it('should be able to watch an object assigned to the root object', function () {
-        runs(function () {
-            var another={};
-            observed.a = another;
-            //delete observed.a;
-            setTimeout(function () {
-                another.a = 2;
+    it('should be able to watch an object assigned to the root object', function (done) {
 
-                observed.b = 0;
-            }, 4)
-        });
+		var another={};
+		observed.a = another;
+		//delete observed.a;
+		setTimeout(function () {
+			another.a = 2;
 
-        waits(10);
+			observed.b = 0;
+		}, 4);
 
-        runs(function () {
+		setTimeout(function(){
+			expect(changes.length).toBe(2);
+			expect(changes[0].length).toBe(3);
+			expect(changes[0][0].type).toBe('add');
+			done();
+		}, 10);
 
-            expect(changes.length).toBe(2);
-            expect(changes[0].length).toBe(3);
-            expect(changes[0][0].type).toBe('add');
 
-        });
     })
 });
