@@ -35,41 +35,49 @@ Object.defineProperty(Object, "deepObserve", {
 			}
 		}
 
-		Object.observe(obj, function(changes) {
+        function observerFn(changes) {
             console.log("changes triggered " + changes.length );
             var i = changes.length;
-			while (i--) {
-				var change = changes[i];
+            while (i--) {
+                var change = changes[i];
 
-			//  console.log(change.type, change.name, change.oldValue);
-				if (change.type === 'add') {
+                //  console.log(change.type, change.name, change.oldValue);
+                if (change.type === 'add') {
                     console.log("add");
                     var addedObj = change.object[change.name];
-					if (Object.isObject(addedObj)) {
-						console.log("Observing new property because it is an object " + change.name);
-						recourse(addedObj, change.name);
-					}
-				} else if (change.type === 'delete') {
-					//console.log("delete");
-				} else if (change.type === 'update') {
-					if (typeof change.oldValue === 'object') {
+                    if (Object.isObject(addedObj)) {
+                        console.log("Observing new property because it is an object " + change.name);
+                        recourse(addedObj, change.name);
+                    }
+                } else if (change.type === 'delete') {
+                    //console.log("delete");
+                    if (typeof change.oldValue === 'object') {
 
-					}
-					var changed = change.object[change.name];
-					if (Object.isObject(changed)) {
-						recourse(changed, change.name);
-					}
-					//console.log("update");
-				}
-			}
-			if (!notifier) {
-				CB.apply(obj, arguments);
-			} else {
+                    }
+                } else if (change.type === 'update') {
+                    if (typeof change.oldValue === 'object') {
+
+                    }
+                    var changed = change.object[change.name];
+                    if (Object.isObject(changed)) {
+                        recourse(changed, change.name);
+                    }
+                    //console.log("update");
+                }
+            }
+            if (!notifier) {
+                CB.apply(obj, arguments);
+            } else {
                 change.path = previousPath.join('.') + change.name;
                 console.log("deep notif");
-                notf('deep' + change.type, change);
+                change.type = 'deep_' + change.type;
+                notf(change);
             }
-		});
+        }
 
+		Object.observe(obj, observerFn);
+        return function () {
+            Object.deliverChangeRecords(observerFn);
+        }
 	}
 });
