@@ -50,13 +50,14 @@ Object.defineProperty(Object, "deepObserve", {
                         recourse(addedObj, change.name);
                     }
                 } else if (change.type === 'delete') {
-                    //console.log("delete");
+                    console.log("delete");
                     if (typeof change.oldValue === 'object') {
-
+						console.log("unobserving on delete");
+						Object.unobserve(change.oldValue, observerFn);	// TODO why does this fail?
                     }
                 } else if (change.type === 'update') {
                     if (typeof change.oldValue === 'object') {
-
+						Object.unobserve(change.oldValue, observerFn);
                     }
                     var changed = change.object[change.name];
                     if (Object.isObject(changed)) {
