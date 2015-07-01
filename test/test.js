@@ -3,6 +3,7 @@ require('../o.deepObserve');
 
 describe('deepObserve', function() {
   var observed;
+  var nested;
 
   function observer(changesTriggered) {
     changes.push(changesTriggered);
@@ -12,7 +13,8 @@ describe('deepObserve', function() {
   var deliver;
 
   beforeEach(function() {
-    observed = {};
+    nested = {};
+    observed = {nested: nested};
     changes = [];
     deliver = Object.deepObserve(observed, observer);
   });
@@ -72,6 +74,22 @@ describe('deepObserve', function() {
       done();
     }, 15)
 
-  })
+  });
+  
+  it('should stop watching a nested object when it is overwritten with another one', function(done){
+    var another = {};
+    observed.nested = another;
+    setTimeout(function(){
+      nested.a = 3;
+      setTimeout(function(){
+        expect(changes.length).to.equal(1);
+        done();
+      });
+    });
+  });
+
+  it('should allow one object to be observed separately as part of two trees', function(){
+      ;
+  });
 
 });
