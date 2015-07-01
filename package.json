@@ -3,7 +3,7 @@
   "description": "a recursive abstraction on top of Object.observe for observation of the whole object tree, not just own properties",
   "version": "0.1.0",
   "private": false,
-  "url": "https://github.com/capaj/o.deepObserve",
+  "url": "https://github.com/capaj/observe-deep",
   "keywords": [
     "ES6",
     "WeakMap",
@@ -17,7 +17,7 @@
   "main": "./observe-deep.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/capaj/o.deepObserve.git"
+    "url": "git://github.com/capaj/observe-deep.git"
   },
   "devDependencies": {
     "chai": "^3.0.0",
