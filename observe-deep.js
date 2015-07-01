@@ -13,7 +13,7 @@ function deepObserve(obj, CB, notifier, previousPath, observersMap) {
   while (key = keys.pop()) {
     if (typeof obj[key] === 'object') {
       debug("Observing property " + key);
-      recourse(obj[key], key);
+      recourse(obj[key], [key]);
     }
   }
 
@@ -27,12 +27,12 @@ function deepObserve(obj, CB, notifier, previousPath, observersMap) {
     var i = changes.length;
     while (i--) {
       var path = previousPath.slice();
+
       var change = changes[i];
       debug("change.name", change.name);
       path.push(change.name);
 
       debug("path", path);
-      //  debug(change.type, change.name, change.oldValue);
 
       if (change.type === 'add') {
         var addedObj = change.object[change.name];
@@ -47,14 +47,14 @@ function deepObserve(obj, CB, notifier, previousPath, observersMap) {
           unobserve(change);
         }
       } else if (change.type === 'update') {
+        var newValue = change.object[change.name];
+
         if (typeof change.oldValue === 'object') {
-          unobserve(change);
+          unobserve(change);  //newValue is always different from the old one, we don't have to check about that
         }
-        var changed = change.object[change.name];
-        if (isObject(changed)) {
-          recourse(changed, path);
+        if (isObject(newValue)) {
+          recourse(newValue, path);
         }
-        //debug("update");
       }
     }
     if (previousPath.length === 0) {
@@ -72,6 +72,7 @@ function deepObserve(obj, CB, notifier, previousPath, observersMap) {
       notifier.notify(change);
     }
   }
+
   observersMap.set(obj, observerFn);
   Object.observe(obj, observerFn);
   return function() {
@@ -79,17 +80,13 @@ function deepObserve(obj, CB, notifier, previousPath, observersMap) {
   }
 }
 
-Object.defineProperty(Object, "deepObserve", {
-  enumerable: false,
-  writable: true,
-  /**
-   * observes changes on tree of objects
-   * @param {Object} obj to deeply observe
-   * @param {Function} CB to call when changes occur
-   */
-  value: function(obj, CB) {
-    var observersMap = new WeakMap();
-    var notf = Object.getNotifier(obj);
-    return deepObserve(obj, CB, notf, [], observersMap);
-  }
-});
+/**
+ * observes changes on tree of objects
+ * @param {Object} obj to deeply observe
+ * @param {Function} CB to call when changes occur
+ */
+module.exports = function observeDeep(obj, CB) {
+  var observersMap = new WeakMap();
+  var notf = Object.getNotifier(obj);
+  return deepObserve(obj, CB, notf, [], observersMap);
+};

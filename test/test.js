@@ -1,5 +1,6 @@
 var expect = require('chai').expect;
-require('../o.deepObserve');
+
+var observeDeep = require('../observe-deep');
 
 describe('deepObserve', function() {
   var observed;
@@ -16,11 +17,11 @@ describe('deepObserve', function() {
     nested = {};
     observed = {nested: nested};
     changes = [];
-    deliver = Object.deepObserve(observed, observer);
+    deliver = observeDeep(observed, observer);
   });
-  
-  it('should throw when cyclic object is detected', function(){
-      //TODO implement
+
+  it('should throw when cyclic object is detected', function() {
+    //TODO implement
   });
 
   it("should be able to watch simple object and it's values same as regular Object.observe, deliver function should be returned", function(done) {
@@ -28,7 +29,7 @@ describe('deepObserve', function() {
     observed.a = 1;
     observed.a = 2;
     delete observed.a;
-    setTimeout(function(){
+    setTimeout(function() {
       expect(changes.length).to.equal(1);
     }, 1);
 
@@ -75,25 +76,42 @@ describe('deepObserve', function() {
     }, 15)
 
   });
-  
-  it('should stop watching a nested object when it is overwritten with another one', function(done){
+
+  it('should stop watching a nested object when it is overwritten with another one', function(done) {
     var another = {};
     observed.nested = another;
-    setTimeout(function(){
+    setTimeout(function() {
       nested.a = 3;
-      setTimeout(function(){
+      setTimeout(function() {
         expect(changes.length).to.equal(1);
         done();
       });
     });
   });
 
-  it('should allow one object to be observed separately as part of two trees', function(){
-      ;
+  it('should allow one object to be observed separately as part of two trees', function() {
+
   });
-  
-  it('should still observe/unobserve when one object is assgigned on two different properties', function(){
-      ;
+
+  it('should still observe/unobserve when one object is assigned on two different properties', function(done) {
+    observed.nestedSecond = nested;
+    setTimeout(function() {
+      nested.a = 3;
+      setTimeout(function() {
+        expect(changes.length).to.equal(2);
+
+        setTimeout(function(){
+        	delete observed.nested;
+          setTimeout(function(){
+          	nested.b = 4;
+            setTimeout(function(){
+              expect(changes.length).to.equal(4);
+              done();
+            });
+          });
+        });
+      });
+    });
   });
 
 });
