@@ -91,5 +91,9 @@ describe('deepObserve', function() {
   it('should allow one object to be observed separately as part of two trees', function(){
       ;
   });
+  
+  it('should still observe/unobserve when one object is assgigned on two different properties', function(){
+      ;
+  });
 
 });
