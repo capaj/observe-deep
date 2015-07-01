@@ -21,7 +21,7 @@ var deliver = observeDeep(observed, observer);
 ```
 
 ## Utility
-Why? Because we can! Also I believe this little observation helper can save you a lot of troubles when you use MVVM patter for your app. Observing, you can be sure your views are rendered whenever anything changes in your model.
+Why? Because we can! Also I believe this little observation helper can save you a lot of troubles when you use MVVM pattern for your app. Observing, you can be sure your views are rendered whenever anything changes in your model.
 So could this be used instead of Flux for example? Or instead of dirty checking for Angular 1.x.x? I believe it could, I will try to prove that claim soon.
 
 ## TODO

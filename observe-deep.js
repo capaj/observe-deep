@@ -76,7 +76,7 @@ function deepObserve(obj, CB, notifier, previousPath, observersMap) {
   observersMap.set(obj, observerFn);
   Object.observe(obj, observerFn);
   return function() {
-    Object.deliverChangeRecords(observerFn);
+    Object.deliverChangeRecords(observerFn);  //TODO this will only work for top level observer, we probably need to iterate all observers and call deliverChangeRecords for each one of them
   }
 }
 
