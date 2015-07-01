@@ -1,9 +1,13 @@
 {
-  "name": "o.deepObserve",
+  "name": "o.deepobserve",
   "description": "",
+  "version": "0.1.0",
+  "private": false,
   "url": "https://github.com/capaj/o.deepObserve",
   "keywords": [
-    "ES6"
+    "ES6",
+    "observe",
+    "object"
   ],
   "author": {
     "name": "Jiří Špác",
@@ -15,14 +19,15 @@
     "url": "git://github.com/capaj/o.deepObserve.git"
   },
   "devDependencies": {
-    "karma": "~0.12",
-    "karma-chrome-launcher": "^0.1.4",
-    "karma-jasmine": "^0.2"
+    "chai": "^3.0.0",
+    "mocha": "^2.2.5"
   },
-  "version": "0.1.0",
   "license": "MIT",
   "engines": {
     "node": "0.11.0"
   },
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "debug": "^2.2.0"
+  }
 }

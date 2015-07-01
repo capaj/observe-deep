@@ -1,3 +1,6 @@
+var expect = require('chai').expect;
+require('../o.deepObserve');
+
 describe('deepObserve', function() {
   var observed;
 
@@ -18,22 +21,23 @@ describe('deepObserve', function() {
       //TODO implement
   });
 
-  xit("should be able to watch simple object and it's values same as regular Object.observe, deliver function should be returned", function(done) {
+  it("should be able to watch simple object and it's values same as regular Object.observe, deliver function should be returned", function(done) {
 
     observed.a = 1;
     observed.a = 2;
     delete observed.a;
-    deliver();
-    expect(changes.length).toBe(1);
+    setTimeout(function(){
+      expect(changes.length).to.equal(1);
+    }, 1);
 
     setTimeout(function() {
       observed.b = 0;
     }, 4);
 
     setTimeout(function() {
-      expect(changes.length).toBe(2);
-      expect(changes[0].length).toBe(3);
-      expect(changes[0][0].type).toBe('add');
+      expect(changes.length).to.equal(2);
+      expect(changes[0].length).to.equal(3);
+      expect(changes[0][0].type).to.equal('add');
       done();
     }, 10);
 
@@ -43,28 +47,28 @@ describe('deepObserve', function() {
 
     var another = {};
     observed.a = another;
-    //delete observed.a;
+
     setTimeout(function() {
       another.propOnAnother = 'value on another';
       observed.b = 0;
-    }, 4);
+    }, 1);
 
     setTimeout(function() {
-      expect(changes.length).toBe(2);
-      expect(changes[0].length).toBe(1);
-      expect(changes[0][0].type).toBe('add');
+      expect(changes.length).to.equal(3);
+      expect(changes[0].length).to.equal(1);
+      expect(changes[0][0].type).to.equal('add');
+      console.log("willDelete");
       delete observed.a;
-      deliver();
 
     }, 10);
 
     setTimeout(function() {
-      another.c = 1;
+      another.c = 1;  //should not trigger a change, because another has been deleted from observed
     }, 12);
 
     setTimeout(function() {
-      expect(changes.length).toBe(2);	//TODO find out reason for failure
-
+      console.log("changes", changes);
+      expect(changes.length).to.equal(4);
       done();
     }, 15)
 

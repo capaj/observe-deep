@@ -1,9 +1,8 @@
-import observe from 'observe-js';
-
 function isObject(value) {
-  // http://jsperf.com/isobject4
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
+  return value !== null && typeof value === 'object';
 }
+
+var debug = require('debug')('o.deepObserve');
 
 Object.defineProperty(Object, "deepObserve", {
   enumerable: false,
@@ -19,6 +18,8 @@ Object.defineProperty(Object, "deepObserve", {
     var keys = Object.keys(obj);
     if (!previousPath) {
       previousPath = [];
+    }else{
+      debug("previousPath", previousPath);
     }
     var recourse = function(rObj, pathToAdd) {
       previousPath.push(pathToAdd);
@@ -28,30 +29,34 @@ Object.defineProperty(Object, "deepObserve", {
     var key;
     while (key = keys.pop()) {
       if (typeof obj[key] === 'object') {
-        console.log("Observing property " + key);
-        recourse(obj[key], key);
+        debug("Observing property " + key);
+        recourse(obj[key], [key]);
       }
     }
 
     function observerFn(changes) {
-      console.log("changes triggered " + changes.length);
+      debug("changes triggered ", changes);
+      var path = previousPath.slice();
       var i = changes.length;
       while (i--) {
         var change = changes[i];
+        debug("change.name", change.name);
 
-        //  console.log(change.type, change.name, change.oldValue);
+
+        debug("previousPath2", previousPath);
+        //  debug(change.type, change.name, change.oldValue);
         if (change.type === 'add') {
-          console.log("add");
+          debug("add");
           var addedObj = change.object[change.name];
           if (isObject(addedObj)) {
-            console.log("Observing new property because it is an object " + change.name);
-            recourse(addedObj, change.name);
+            debug("Observing new property because it is an object " + change.name);
+            recourse(addedObj, previousPath);
           }
         } else if (change.type === 'delete') {
-          console.log("delete");
+          debug("delete");
           if (typeof change.oldValue === 'object') {
-            console.log("unobserving on delete");
-            Object.unobserve(change.oldValue, observerFn);	// TODO why does this fail?
+            debug("unobserving on delete");
+            Object.unobserve(change.oldValue, observerFn);
           }
         } else if (change.type === 'update') {
           if (typeof change.oldValue === 'object') {
@@ -59,18 +64,19 @@ Object.defineProperty(Object, "deepObserve", {
           }
           var changed = change.object[change.name];
           if (isObject(changed)) {
-            recourse(changed, change.name);
+            recourse(changed, previousPath);
           }
-          //console.log("update");
+          //debug("update");
         }
       }
       if (!notifier) {
         CB.apply(obj, arguments);
       } else {
+        debug("previousPath3", previousPath);
         change.path = previousPath.join('.') + change.name;
-        console.log("deep notif");
         change.type = 'deep_' + change.type;
-        notf(change);
+        debug("deep notif", change);
+        notf.notify(change);
       }
     }
 
